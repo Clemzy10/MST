@@ -1,0 +1,84 @@
+public static void getKruskal(int numOfNodes, ArrayList<MST> edges, ArrayList<Integer> cost) {
+		long startTime = System.currentTimeMillis();
+		
+		//sort edges 
+		Collections.sort(edges, new Comparator<MST>() {
+            @Override 
+            public int compare(MST p1, MST p2) {
+                return p1.cost - p2.cost;
+            }
+		
+	});
+		
+		//intialize a components array to hold each component
+		List<HashSet> components = new ArrayList<HashSet>();
+		
+		//initialize T to the empty set
+		Set<MST> T = new HashSet<MST>();
+		
+		//make an array to hold all nodes
+			Set<Integer> allNodes = new HashSet<Integer>();
+	      for(int i=0; i<edges.size(); i++) {
+	    	  MST edge = edges.get(i);
+	    	 allNodes.add(edge.node);
+	    	  allNodes.add(edge.node2);
+	      }
+	      
+	      //pass array of component into array of components
+	      for(int node : allNodes) {
+	    	  HashSet<Integer> component = new HashSet<Integer>();
+	    	  component.add(node);
+	    	  components.add(component);
+	      }
+	      
+	    // while components > 2  
+		while(components.size()>= 2) {
+			//remove 1st edge and make it (i,j)
+			 MST edge = edges.get(0);
+			 edges.remove(0);
+			 int i = edge.node;
+			 int j = edge.node2;
+			 
+			 //set a counter
+			 int whichComponentHasI = 0;
+			 int whichComponentHasJ = 0;
+			 
+			 // get each component from components and count
+			 for (int index= 0; index < components.size(); index++) {
+				 Set component = components.get(index);
+				 if (component.contains(i)) {
+					 whichComponentHasI = index;
+				 }
+				 if (component.contains(j)) {
+					 whichComponentHasJ = index;
+				 }
+			 }
+			 
+			 //if component i is different from j, add to T and merge
+			 if (whichComponentHasI != whichComponentHasJ) {
+				 T.add(edge);
+				 Set theComponentHasI = components.get(whichComponentHasI);
+				 Set theComponentHasJ = components.get(whichComponentHasJ);
+				 HashSet mergedComponent = new HashSet<Integer>();
+				 mergedComponent.addAll(theComponentHasI);
+				 mergedComponent.addAll(theComponentHasJ);
+				 components.remove(theComponentHasI);
+				 components.remove(theComponentHasJ);
+				 components.add(mergedComponent);
+				 
+			 }
+			
+		}
+		long stopTime = System.currentTimeMillis();
+		int total = 0;
+		for(MST edge : T) {
+			total = total + edge.cost;
+		}
+		System.out.println("total cost for Kruskal's " + total);
+		
+		System.out.println("edges being used for Kruskal's :");
+		for (MST edge: T) {
+			System.out.println("  edge between " + edge.node + " and " + edge.node2);
+		}
+	
+	}
